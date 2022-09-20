@@ -131,3 +131,108 @@ int main()
     myExporter.exportDocument(doc);
     
 }
+
+/*
+
+worked example;
+
+*/
+
+
+
+
+
+
+#include <iostream>
+#include <string.h>
+using namespace std;
+
+using Data = string;
+using Document = string;
+using URL = string;
+// XMLConverter
+
+class Converter
+{
+public:
+    virtual Data convertDocumentToData(Document doc) = 0;
+};
+
+// XMLConverter
+
+class XMLConverter : public Converter
+{
+public:
+    Data convertDocumentToData(Document doc);
+};
+
+Data XMLConverter::convertDocumentToData(Document doc)
+{
+    cout << "from  XMLConverter " << endl;
+    cout << doc << endl;
+}
+
+// BinaryConverter
+
+class BinaryConverter : public Converter
+{
+public:
+    Data convertDocumentToData(Document doc);
+};
+
+Data BinaryConverter::convertDocumentToData(Document doc)
+{
+    cout << "from  BinaryConverter " << endl;
+    cout << doc << endl;
+}
+
+// DocumentExporter
+
+class DocumentExporter
+{
+private:
+    // URL _runSaveDialog();
+    void _showSuccessDialog();
+    Converter *_converter;
+
+public:
+    void setConverter(Converter *converter); // Here is the dependency injection function
+    void exportDocument(Document doc);
+};
+void DocumentExporter::_showSuccessDialog()
+{
+    cout << "done" << endl;
+}
+void DocumentExporter::setConverter(Converter *_converter)
+{
+    this->_converter = _converter;
+}
+void DocumentExporter::exportDocument(Document doc)
+{
+    //  URL fileURL = _runSaveDialog();
+    Data fileContent = _converter->convertDocumentToData(doc);
+    //  fileContent.writeToURL(fileURL);
+    _showSuccessDialog();
+}
+// add this
+class txtConverter : public Converter
+{
+public:
+    Data convertDocumentToData(Document doc);
+};
+Data txtConverter::convertDocumentToData(Document doc)
+{
+    cout << "from  txt " << endl;
+    cout << doc << endl;
+}
+
+int main()
+{
+    // using polymorephism
+    Document doc("بسم الله ");
+    // example
+    DocumentExporter myExporter;
+    txtConverter xml_object;
+    myExporter.setConverter(&xml_object);
+    myExporter.exportDocument(doc);
+}
