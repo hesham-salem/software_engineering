@@ -1,7 +1,6 @@
-/*
-https://www.tomdalling.com/blog/software-design/solid-class-design-the-open-closed-principle/
-You should be able to extend a classes behavior, without modifying it.
 
+//https://www.tomdalling.com/blog/software-design/solid-class-design-the-open-closed-principle/
+//You should be able to extend a classes behavior, without modifying it.
 
 //XMLConverter
 class XMLConverter {
@@ -61,14 +60,14 @@ void DocumentExporter::exportDocument(Document doc)
     _showSuccessDialog();
 }
 
-
+/*
 The DocumentExporter class is not closed to change. Every time a new export format must be supported, the DocumentExporter class must be modified.
 "𝙀𝙣𝙪𝙢𝙨 𝙖𝙣𝙙 𝙨𝙬𝙞𝙩𝙘𝙝 𝙨𝙩𝙖𝙩𝙚𝙢𝙚𝙣𝙩𝙨" are strong indicators that a class is not closed to changes.
 
 
 he way to close DocumentExporter to changes, in this case, is to make an abstract base class for all the converters. Then, the converter can be supplied
 to DocumentExporter via a technique called dependency injection. The solution is as follows:
-
+*/
 
 
 class Converter {
@@ -122,9 +121,13 @@ void DocumentExporter::exportDocument(Document doc)
 
 
 
-*/
 
 int main()
 {
-
+//example 
+    DocumentExporter myExporter;
+    XMLConverter xml_object;
+    myExporter.setConverter(&xml_object);
+    myExporter.exportDocument(doc);
+    
 }
