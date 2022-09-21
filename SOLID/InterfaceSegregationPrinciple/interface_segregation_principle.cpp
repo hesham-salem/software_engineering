@@ -106,3 +106,129 @@ int main()
 {
 
 }
+
+
+
+
+
+
+
+
+
+//worked example
+
+#include <iostream>
+#include <string.h>
+#include <fmt/core.h>
+using namespace std;
+// using fmt::print;
+namespace after
+{
+
+    class SomeButtonController;
+    class SomeButton;
+    class SomeWindowController;
+    class SomeWindow;
+
+    // The Button ///////////////////////////////////////////////////////
+
+    class SomeButtonController
+    {
+    public:
+        virtual void onButtonDown() = 0;
+        virtual void onButtonUp() = 0;
+    };
+
+    class SomeButton
+    {
+    private:
+        SomeButtonController *_controller;
+
+    public:
+        void setController(SomeButtonController *controller)
+        {
+            _controller = controller;
+        }
+        void runButton()
+        {
+            _controller->onButtonUp();
+            _controller->onButtonDown();
+        }
+    };
+
+    // The Window ///////////////////////////////////////////////////////
+
+    class SomeWindowController
+    {
+    public:
+        virtual void onWindowOpen() = 0;
+        virtual void onWindowClose() = 0;
+        virtual void onWindowMoved() = 0;
+    };
+
+    class SomeWindow
+    {
+    private:
+        SomeWindowController *_controller;
+
+    public:
+        void setController(SomeWindowController *controller)
+        {
+            _controller = controller;
+        }
+        void runWindows()
+        {
+            _controller->onWindowOpen();
+            _controller->onWindowMoved();
+            _controller->onWindowClose();
+        }
+    };
+
+    // The Controller ///////////////////////////////////////////////////////
+
+    class SomeController : public SomeButtonController, public SomeWindowController
+    {
+    private:
+        SomeWindow *_window;
+        SomeButton *_okButton;
+        SomeButton *_cancelButton;
+
+    public:
+        void onButtonDown()
+        {
+            cout << " frome onButtonDown \n";
+        }
+        void onButtonUp()
+        {
+            cout << " frome onButtonUp \n";
+        }
+        void onWindowOpen()
+        {
+            cout << " frome onWindowOpen \n";
+        }
+        void onWindowClose()
+        {
+            cout << " frome onWindowClose \n";
+        }
+        void onWindowMoved()
+        {
+            cout << " frome onWindowMoved \n";
+        }
+    };
+
+} // after
+
+int main()
+{
+    after::SomeController _SomeController;
+
+    after::SomeButton newButton;
+    newButton.setController(&_SomeController);
+    newButton.runButton();
+
+    fmt::print("test");
+    after::SomeWindow newwindow;
+    newwindow.setController(&_SomeController);
+    newwindow.runWindows();
+}
+
