@@ -1,119 +1,95 @@
-//https://www.tomdalling.com/blog/software-design/solid-class-design-the-liskov-substitution-principle/
-/*
+#include <iostream>
+using namespace std;
 
-Functions that use pointers to base classes must be able to use objects of derived classes
-without knowing it in other words:
-“parent classes should be easily substituted with their child classes without blowing up the application”.
-
-Let’s consider an Animal parent class:
-
-public class Animal
+namespace before
 {
-public:
-    void makeNoise()
+    class Amphibian
     {
-        cout<<"I am making noise"<<endl;
-    }
-}
-
-Now let’s consider the Cat and Dog classes which extends Animal:
-
-public:
-    class Dog: public Animal
-    {
-
     public:
-    void makeNoise()
+        virtual void swim() = 0;
+        virtual void walk() = 0;
+    };
+    class frog : public Amphibian
     {
-        cout<<"bow wow"<<endl;
-    }
+        void swim()
+        {
+            cout << "I am swiming " << endl;
+        }
+        void walk()
+        {
+            cout << "I am walking" << endl;
+        }
+    };
+    class Dolphin : public Amphibian
+    {
+        void swim()
+        {
+            cout << "I am swiming " << endl;
+        }
+        void walk()
+        {
+            // empty or thow exception
+            throw std::runtime_error("not implemented walk method");
+        }
+    };
 }
 
-class Cat: public Animal
+namespace after
 {
-    public void makeNoise()
+    class Amphibian
     {
-        cout<<"meow meow"<<endl;
-    }
-}
-
-Now, wherever in our code we were using Animal class object we must be able to replace
-it with the Dog or Cat without exploding our code.
-
-if the following class is replace by Animal then our app will crash.
-
-class DumbDog : public  Animal
-{
     public:
-    void makeNoise()
+        virtual void swim() = 0;
+        virtual void walk() = 0;
+    };
+    class swiming_animal
     {
-        throw new RuntimeException("I can't make noise");
-    }
-}
-
-*/
-
-
-class Bird {
-public:
-    virtual void setLocation(double longitude, double latitude) = 0;
-    virtual void setAltitude(double altitude) = 0;
-    virtual void draw() = 0;
-};
-
-/*
-If an override method does nothing or just throws an exception, then you're probably violating the LSP.
-*/
-
-class Penguin: public Bird
-{
-    void setAltitude(double altitude)
+    public:
+        virtual void swim() = 0;
+    };
+    class frog : public Amphibian
     {
-        //altitude can't be set because penguins can't fly
-        //this function does nothing
-    }
-};
-
-/*
-
-Solution 1: The wrong way to do it
-void ArrangeBirdInPattern(Bird* aBird)
-{
-    Pengiun* aPenguin = dynamic_cast<Pengiun*>(aBird);
-    if(aPenguin)
-        ArrangeBirdOnGround(aPenguin);
-    else
-        ArrangeBirdInSky(aBird);
+        void swim()
+        {
+            cout << "I am swiming " << endl;
+        }
+        void walk()
+        {
+            cout << "I am walking" << endl;
+        }
+    };
+    class Dolphin : public swiming_animal
+    {
+        void swim()
+        {
+            cout << "I am swiming " << endl;
+        }
+        void walk()
+        {
+            // empty or thow exception
+        }
+    };
 }
-
-
-Solution 2: An OK way to do it
-
-One not-so-great way of fixing the problem is to add a method to the Bird class named isFlightless.
-
-void ArrangeBirdInPattern(Bird* aBird)
+void test_function_for_Amphibian(before::Amphibian *animal)
 {
-    if(aBird->isFlightless())
-        ArrangeBirdOnGround(aBird);
-    else
-        ArrangeBirdInSky(aBird);
+    animal->swim();
+    animal->walk();
 }
-
-//Solution 3: Proper inheritance
-class Bird {
-public:
-    virtual void draw() = 0;
-    virtual void setLocation(double longitude, double latitude) = 0;
-};
-
-class FlightfulBird : public Bird {
-public:
-    virtual void setAltitude(double altitude) = 0;
-};
-
-*/
-
-
+void test_function_for_swiming_animal(after::swiming_animal *animal)
+{
+    animal->swim();
+}
 int main()
 {
+    before::Dolphin _dolphin_1;
+    test_function_for_Amphibian(&_dolphin_1); // voilate LSP as a method of base class or interface not valid eg: empty or give exception
+
+    // to solve this seperate  the base class /interface for Dolphin as it acording to LSP can not base on Amphibian interface as no implement for walk method
+    // so lets Dolphin based on
+    // applied LSP swiming_animal interface
+    // don't work aroud this to couple Dolphin and frog on the same base Amphibian interface they are differ
+       after::Dolphin _dolphin_2;
+      test_function_for_swiming_animal(&_dolphin_2);
+      after::frog _frog;
+      test_function_for_Amphibian(&_frog); 
 }
