@@ -2,7 +2,10 @@
 //https://www.tomdalling.com/blog/software-design/solid-class-design-the-open-closed-principle/
 //You should be able to extend a classes behavior, without modifying it.
 
-//XMLConverter
+/* the concept is mean that the inteface class(base class) able to acept(extend) new version of modified class without any change of logic of 
+intface class this applyed by polymorephism(dependency injection) finally( don't think of this as we can add more functions to norml class without modification
+because this done by single rospensiblity 
+//XMLConverter */
 class XMLConverter {
 public:
     String convertDocumentToXML(Document doc);
@@ -69,78 +72,7 @@ he way to close DocumentExporter to changes, in this case, is to make an abstrac
 to DocumentExporter via a technique called dependency injection. The solution is as follows:
 */
 
-
-class Converter {
-public:
-    virtual Data convertDocumentToData(Document doc) = 0;
-};
-
-//XMLConverter
-
-class XMLConverter : public Converter {
-public:
-    Data convertDocumentToData(Document doc);
-};
-
-Data XMLConverter::convertDocumentToData(Document doc)
-{
-    //convert to xml here
-}
-
-//BinaryConverter
-
-class BinaryConverter : public Converter {
-public:
-    Data convertDocumentToData(Document doc);
-};
-
-Data BinaryConverter::convertDocumentToData(Document doc)
-{
-    //convert to binary here
-}
-
-//DocumentExporter
-
-class DocumentExporter {
-private:
-    URL _runSaveDialog();
-    void _showSuccessDialog;
-    Converter* _converter;
-public:
-    void setConverter(Converter* converter); //Here is the dependency injection function
-    void exportDocument(Document doc);
-};
-
-void DocumentExporter::exportDocument(Document doc)
-{
-    URL fileURL = _runSaveDialog();
-    Data fileContent = _converter.convertDocumentToData(doc);
-    fileContent.writeToURL(fileURL);
-    _showSuccessDialog();
-}
-
-
-
-
-int main()
-{
-//example 
-    DocumentExporter myExporter;
-    XMLConverter xml_object;
-    myExporter.setConverter(&xml_object);
-    myExporter.exportDocument(doc);
-    
-}
-
-/*
-
-worked example;
-
-*/
-
-
-
-
+//worked example
 
 
 #include <iostream>
