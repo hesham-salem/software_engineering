@@ -1,95 +1,70 @@
+/*The Interface Segregation Principle vs liskov substitution principle :
+Interface Segregation Principle : focus on applying just the methods in interface ( check not work around by thow or empty method) 
+liskov substitution Principle :focus on the bahvior of driven class methods due to implementation expected like the base class 
+I mean driven class can be subtituted in stead of base class without diffent behvior 
+*/
+
+// before
+
 #include <iostream>
-using namespace std;
 
-namespace before
-{
-    class Amphibian
-    {
-    public:
-        virtual void swim() = 0;
-        virtual void walk() = 0;
-    };
-    class frog : public Amphibian
-    {
-        void swim()
-        {
-            cout << "I am swiming " << endl;
-        }
-        void walk()
-        {
-            cout << "I am walking" << endl;
-        }
-    };
-    class Dolphin : public Amphibian
-    {
-        void swim()
-        {
-            cout << "I am swiming " << endl;
-        }
-        void walk()
-        {
-            // empty or thow exception
-            throw std::runtime_error("not implemented walk method");
-        }
-    };
+class Rectangle {
+protected:
+    int width;
+    int height;
+
+public:
+    Rectangle(int width, int height) : width(width), height(height) {}
+
+    virtual void setWidth(int width) {
+        this->width = width;
+    }
+
+    virtual void setHeight(int height) {
+        this->height = height;
+    }
+
+    int getWidth() const {
+        return width;
+    }
+
+    int getHeight() const {
+        return height;
+    }
+
+    int getArea() const {
+        return width * height;
+    }
+};
+
+class Square : public Rectangle {
+public:
+    Square(int size) : Rectangle(size, size) {}
+
+    void setWidth(int width) override {
+        this->width =  width;
+    }
+
+    void setHeight(int height) override {
+        this->width = this->height = height;
+    }
+};
+
+void process(Rectangle& r) {
+    int width = r.getWidth();
+    r.setHeight(10);
+    std::cout << "Expected area = " << (width * 10) << ", got " << r.getArea() << std::endl;
 }
 
-namespace after
-{
-    class Amphibian
-    {
-    public:
-        virtual void swim() = 0;
-        virtual void walk() = 0;
-    };
-    class swiming_animal
-    {
-    public:
-        virtual void swim() = 0;
-    };
-    class frog : public Amphibian
-    {
-        void swim()
-        {
-            cout << "I am swiming " << endl;
-        }
-        void walk()
-        {
-            cout << "I am walking" << endl;
-        }
-    };
-    class Dolphin : public swiming_animal
-    {
-        void swim()
-        {
-            cout << "I am swiming " << endl;
-        }
-        void walk()
-        {
-            // empty or thow exception
-        }
-    };
-}
-void test_function_for_Amphibian(before::Amphibian *animal)
-{
-    animal->swim();
-    animal->walk();
-}
-void test_function_for_swiming_animal(after::swiming_animal *animal)
-{
-    animal->swim();
-}
-int main()
-{
-    before::Dolphin _dolphin_1;
-    test_function_for_Amphibian(&_dolphin_1); // voilate LSP as a method of base class or interface not valid eg: empty or give exception
+int main() {
+    Rectangle rectangle(5, 10);
+    Square square(5);
 
-    // to solve this seperate  the base class /interface for Dolphin as it acording to LSP can not base on Amphibian interface as no implement for walk method
-    // so lets Dolphin based on
-    // applied LSP swiming_animal interface
-    // don't work aroud this to couple Dolphin and frog on the same base Amphibian interface they are differ
-       after::Dolphin _dolphin_2;
-      test_function_for_swiming_animal(&_dolphin_2);
-      after::frog _frog;
-      test_function_for_Amphibian(&_frog); 
+    process(rectangle); // Expected area = 50, got 100
+    process(square); // Expected area = 50, got 100
+
+    return 0;
 }
+
+
+
