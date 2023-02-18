@@ -5,6 +5,10 @@ https://boost-experimental.github.io/di/cpp-london-2017/
 https://github.com/stevef51/CPPServiceLocator
 */
 
+/*
+states that high-level modules should not depend on low-level modules, both should depend on abstractions. 
+Abstractions should not depend on details, but details should depend on abstractions.
+*/
 
 namespace before
 {
@@ -28,6 +32,8 @@ public:
         engine_ptr->Start();
     }
 };
+    //now upper module here is car and lower module in engine 
+    // if we chnage type of engine(lower module) form gas to electric we should also change the upper module to meet this 
 
 
 }//end of namespace before
@@ -74,7 +80,8 @@ public:
 };
 
 }
-
+// but here if we chnage type of engine(lower module) form gas to electric 
+// we don't need change the upper module to meet this as we use depency injection design pattern
 
 int main()
 {
