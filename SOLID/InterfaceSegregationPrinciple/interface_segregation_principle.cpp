@@ -1,234 +1,105 @@
 //https://www.tomdalling.com/blog/software-design/solid-class-design-the-interface-segregation-principle/
 
-/*
-The problem with this design is that SomeButton and SomeWindow both have a SomeController pointer.
-SomeButton does need to call the onButton[X] methods of the controller object, but it also has access
-to the onWindow[X] methods (i.e. _controller->onWindowClose ) which are useless to the button.
-The presence of useless onWindow[X] methods is a violation of the ISP.
-There is also a cyclic dependency, which is another hint that something is amiss.
+//Clients should not be forced to depend upon interfaces that they do not use.
 
-"fat interfaces" — interfaces with additional useless methods — lead to inadvertent coupling between classes
+//"fat interfaces" — interfaces with additional useless methods — lead to inadvertent coupling between classes
 
+/*The Interface Segregation Principle (ISP) states that a client should not be exposed to methods it doesn’t need.
+Declaring methods in an interface that the client doesn’t need pollutes the interface and leads to a “bulky” or “fat” interface.*/
+
+/*note don't cosider missing implementing of a mothed in interface is case of violate the principle as this can not happen due to
+pure virual function instead of this thow  in or empty method will consider violate the principle.*/
+
+/*The Interface Segregation Principle vs liskov substitution principle :
+Interface Segregation Principle : focus on applying just the methods in interface ( check not work around by thow or empty method) 
+liskov substitution Principle :focus on the bahvior of driven class methods due to implementation expected like the base class 
+I mean driven class can be subtituted in stead of base class without diffent behvior 
 */
 
-namespace before
-{
-class SomeButton;
-class SomeController;
-class SomeWindow;
 
-class SomeButton {
-private:
-    SomeController* _controller;
+
+
+//before 
+#include <iostream>
+
+class Machine {
 public:
-    void setController(SomeController* controller);
+    virtual void print() = 0;
+    virtual void scan() = 0;
 };
 
-class SomeWindow {
-private:
-    SomeController* _controller;
+class Printer : public Machine {
 public:
-    void setController(SomeController* controller);
+    void print() override {
+        std::cout << "Printing..." << std::endl;
+    }
+
+    void scan() override {
+        // Not applicable for printers
+        //or thow exception 
+        //or empty
+        std::cout << "Scan is not applicable for printers" << std::endl;
+    }
 };
 
-class SomeController {
-private:
-    SomeWindow* _window;
-    SomeButton* _okButton;
-    SomeButton* _cancelButton;
+class Scanner : public Machine {
 public:
-    void onButtonDown(SomeButton* button);
-    void onButtonUp(SomeButton* button);
-    void onWindowOpen(SomeWindow* window);
-    void onWindowClose(SomeWindow* window);
-    void onWindowMoved(SomeWindow* window);
+    void print() override {
+        // Not applicable for scanners
+        std::cout << "Print is not applicable for scanners" << std::endl;
+    }
+
+    void scan() override {
+        std::cout << "Scanning..." << std::endl;
+    }
 };
 
-}//before
+int main() {
+    Machine* machine1 = new Printer();
+    machine1->print();
+    machine1->scan(); // error: Printer cannot scan
 
-namespace after
-{
+    Machine* machine2 = new Scanner();
+    machine2->print(); // error: Scanner cannot print
+    machine2->scan();
 
-class SomeButtonController;
-class SomeButton;
-class SomeWindowController;
-class SomeWindow;
-
-// The Button ///////////////////////////////////////////////////////
-
-class SomeButtonController {
-public:
-    virtual void onButtonDown(SomeButton* button) = 0;
-    virtual void onButtonUp(SomeButton* button) = 0;
-};
-
-class SomeButton {
-private:
-    SomeButtonController* _controller;
-public:
-    void setController(SomeButtonController* controller);
-};
-
-// The Window ///////////////////////////////////////////////////////
-
-class SomeWindowController {
-public:
-    virtual void onWindowOpen(SomeWindow* window) = 0;
-    virtual void onWindowClose(SomeWindow* window) = 0;
-    virtual void onWindowMoved(SomeWindow* window) = 0;
-};
-
-class SomeWindow {
-private:
-    SomeWindowController* _controller;
-public:
-    void setController(SomeWindowController* controller);
-};
-
-// The Controller ///////////////////////////////////////////////////////
-
-class SomeController : public SomeButtonController, public SomeWindowController {
-private:
-    SomeWindow* _window;
-    SomeButton* _okButton;
-    SomeButton* _cancelButton;
-public:
-    void onButtonDown(SomeButton* button);
-    void onButtonUp(SomeButton* button);
-    void onWindowOpen(SomeWindow* window);
-    void onWindowClose(SomeWindow* window);
-    void onWindowMoved(SomeWindow* window);
-};
-
-}// after
-
-int main()
-{
-
+    return 0;
 }
 
-
-
-
-
-
-
-
-
-//worked example
+//after
 
 #include <iostream>
-#include <string.h>
-#include <fmt/core.h>
-using namespace std;
-// using fmt::print;
-namespace after
-{
 
-    class SomeButtonController;
-    class SomeButton;
-    class SomeWindowController;
-    class SomeWindow;
+class Printable {
+public:
+    virtual void print() = 0;
+};
 
-    // The Button ///////////////////////////////////////////////////////
+class Scannable {
+public:
+    virtual void scan() = 0;
+};
 
-    class SomeButtonController
-    {
-    public:
-        virtual void onButtonDown() = 0;
-        virtual void onButtonUp() = 0;
-    };
+class Printer : public Printable {
+public:
+    void print() override {
+        std::cout << "Printing..." << std::endl;
+    }
+};
 
-    class SomeButton
-    {
-    private:
-        SomeButtonController *_controller;
+class Scanner : public Scannable {
+public:
+    void scan() override {
+        std::cout << "Scanning..." << std::endl;
+    }
+};
 
-    public:
-        void setController(SomeButtonController *controller)
-        {
-            _controller = controller;
-        }
-        void runButton()
-        {
-            _controller->onButtonUp();
-            _controller->onButtonDown();
-        }
-    };
+int main() {
+    Printable* printer = new Printer();
+    printer->print();
 
-    // The Window ///////////////////////////////////////////////////////
+    Scannable* scanner = new Scanner();
+    scanner->scan();
 
-    class SomeWindowController
-    {
-    public:
-        virtual void onWindowOpen() = 0;
-        virtual void onWindowClose() = 0;
-        virtual void onWindowMoved() = 0;
-    };
-
-    class SomeWindow
-    {
-    private:
-        SomeWindowController *_controller;
-
-    public:
-        void setController(SomeWindowController *controller)
-        {
-            _controller = controller;
-        }
-        void runWindows()
-        {
-            _controller->onWindowOpen();
-            _controller->onWindowMoved();
-            _controller->onWindowClose();
-        }
-    };
-
-    // The Controller ///////////////////////////////////////////////////////
-
-    class SomeController : public SomeButtonController, public SomeWindowController
-    {
-    private:
-        SomeWindow *_window;
-        SomeButton *_okButton;
-        SomeButton *_cancelButton;
-
-    public:
-        void onButtonDown()
-        {
-            cout << " frome onButtonDown \n";
-        }
-        void onButtonUp()
-        {
-            cout << " frome onButtonUp \n";
-        }
-        void onWindowOpen()
-        {
-            cout << " frome onWindowOpen \n";
-        }
-        void onWindowClose()
-        {
-            cout << " frome onWindowClose \n";
-        }
-        void onWindowMoved()
-        {
-            cout << " frome onWindowMoved \n";
-        }
-    };
-
-} // after
-
-int main()
-{
-    after::SomeController _SomeController;
-
-    after::SomeButton newButton;
-    newButton.setController(&_SomeController);
-    newButton.runButton();
-
-    fmt::print("test");
-    after::SomeWindow newwindow;
-    newwindow.setController(&_SomeController);
-    newwindow.runWindows();
+    return 0;
 }
-
