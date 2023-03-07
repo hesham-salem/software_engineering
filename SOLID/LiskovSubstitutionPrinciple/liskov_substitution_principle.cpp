@@ -1,7 +1,8 @@
 /*The Interface Segregation Principle vs liskov substitution principle :
-Interface Segregation Principle : focus on applying just the methods in interface ( check not work around by thow or empty method) 
+Interface Segregation Principle : focus on applying just the methods in interface ( should not work around by thow or empty method) 
 liskov substitution Principle :focus on the bahvior of driven class methods due to implementation expected like the base class 
-I mean driven class can be subtituted in stead of base class without diffent behvior 
+I mean driven class can be subtituted in stead of base class without diffent behvior (take into account the inherited methods that not overriden alongside with
+the overriden methods for example getter in the down example
 */
 
 // before
