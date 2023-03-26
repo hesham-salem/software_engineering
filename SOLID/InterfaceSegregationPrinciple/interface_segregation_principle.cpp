@@ -8,7 +8,7 @@
 Declaring methods in an interface that the client doesn’t need pollutes the interface and leads to a “bulky” or “fat” interface.*/
 
 /*note don't cosider missing implementing of a mothed in interface is case of violate the principle as this can not happen due to
-pure virual function instead of this thow  in or empty method will consider violate the principle.*/
+pure virual function instead of this throw  in or empty method will consider violate the principle.*/
 
 /*The Interface Segregation Principle vs liskov substitution principle :
 Interface Segregation Principle : focus on applying just the methods in interface ( check not work around by thow or empty method) 
