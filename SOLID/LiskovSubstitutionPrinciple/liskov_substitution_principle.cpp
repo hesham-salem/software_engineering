@@ -61,7 +61,7 @@ int main() {
     Rectangle rectangle(5, 10);
     Square square(5);
 
-    process(rectangle); // Expected area = 50, got 100
+    process(rectangle); // Expected area = 50, got 50
     process(square); // Expected area = 50, got 100
 
     return 0;
